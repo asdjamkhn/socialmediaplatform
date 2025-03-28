@@ -26,8 +26,6 @@ public class RegisterDto {
     @NotEmpty(message = Utils.NOT_EMPTY)
     private String password;
 
-    private String profile;
-
     private String bio;
 
 }

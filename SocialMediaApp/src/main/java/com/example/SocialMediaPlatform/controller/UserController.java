@@ -6,15 +6,14 @@ import com.example.SocialMediaPlatform.dto.RegisterDto;
 import com.example.SocialMediaPlatform.model.User;
 import com.example.SocialMediaPlatform.service.UserService;
 import com.example.SocialMediaPlatform.util.Utils;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,17 +32,48 @@ public class UserController {
         User result = userService.addUser(registerDto);
 
         if (result != null) {
-            return new ApiResponse("User Added", HttpStatus.FOUND.value(), result);
+            return new ApiResponse(Utils.USER_ADDED, HttpStatus.FOUND.value(), result);
         } else {
-            return new ApiResponse("User not Added", HttpStatus.NOT_FOUND.value(), result);
+            return new ApiResponse(Utils.USER_NOT_ADDED, HttpStatus.BAD_REQUEST.value(), result);
         }
     }
 
     //http://localhost:8090/user/login
     @PostMapping(Utils.LOGIN)
-    public ApiResponse loginUser(@Valid @RequestBody LoginDto loginDto, BindingResult bindingResult){
+    public ApiResponse loginUser(@Valid @RequestBody LoginDto loginDto,
+                                 BindingResult bindingResult) {
 
-        userService.loginUser(loginDto);
-        return new ApiResponse("",0,null);
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getFieldError().getDefaultMessage();
+            return new ApiResponse(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR.value(), null);
+        }
+        User result = null;
+        try {
+            result = userService.loginUser(loginDto);
+        }catch (EntityNotFoundException entityNotFoundException){
+            return new ApiResponse(Utils.INCORRECT_EMAIL, HttpStatus.NOT_FOUND.value(), result);
+        }
+        catch (IllegalArgumentException illegalArgumentException){
+            return new ApiResponse(Utils.INCORRECT_PASSWORD, HttpStatus.NOT_FOUND.value(),result);
+        }
+        if (result != null) {
+            return new ApiResponse(Utils.LOGIN_SUCCESSFULL, HttpStatus.FOUND.value(), result);
+        } else {
+            return new ApiResponse(Utils.LOGIN_FAILED, HttpStatus.NOT_FOUND.value(), result);
+        }
     }
+
+    @GetMapping("/{id}")
+    public ApiResponse userById(@PathVariable int id) {
+
+        Optional<User> result = userService.userById(id);
+
+        if (result.isPresent()) {
+            return new ApiResponse(Utils.USER_ADDED, HttpStatus.FOUND.value(), result);
+        } else {
+            return new ApiResponse(Utils.USER_NOT_ADDED, HttpStatus.NOT_FOUND.value(), null);
+        }
+    }
+
+
 }

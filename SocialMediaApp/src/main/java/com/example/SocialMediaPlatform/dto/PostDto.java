@@ -2,6 +2,9 @@ package com.example.SocialMediaPlatform.dto;
 
 import com.example.SocialMediaPlatform.model.Comment;
 import com.example.SocialMediaPlatform.model.Likes;
+import com.example.SocialMediaPlatform.util.Utils;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,9 +18,10 @@ import java.util.List;
 @Getter
 public class PostDto {
 
-    private LocalDate date = LocalDate.now();
+    @NotNull(message = Utils.NOT_NULL)
+    @NotEmpty(message = Utils.NOT_EMPTY)
     private String content;
-    private List<Comment> commentList = new ArrayList<>();
-    private List<Likes> likeList= new ArrayList<>();
+    
+    private int userId;
 
 }
