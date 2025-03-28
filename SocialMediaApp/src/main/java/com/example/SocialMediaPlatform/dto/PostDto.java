@@ -21,7 +21,7 @@ public class PostDto {
     @NotNull(message = Utils.NOT_NULL)
     @NotEmpty(message = Utils.NOT_EMPTY)
     private String content;
-    
+
     private int userId;
 
 }

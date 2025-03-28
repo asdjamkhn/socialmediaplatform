@@ -7,6 +7,8 @@ import com.example.SocialMediaPlatform.repository.PostRepository;
 import com.example.SocialMediaPlatform.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,5 +28,10 @@ public class PostService {
         post.setContent(postDto.getContent());
 
         return postRepository.save(post);
+    }
+
+    public Page<Post> findAll(Pageable pageable) {
+
+        return postRepository.findAll(pageable);
     }
 }
