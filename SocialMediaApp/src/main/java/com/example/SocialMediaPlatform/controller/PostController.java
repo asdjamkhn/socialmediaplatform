@@ -14,6 +14,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
 
 @RestController
@@ -51,5 +53,16 @@ public class PostController {
             return new ApiResponse(Utils.POST_NOT_ADDED, HttpStatus.BAD_REQUEST.value(), postPage);
         }
     }
+
+    @GetMapping(Utils.POST_BY_ID)
+    public ApiResponse getPostById(@PathVariable int id){
+        Optional<Post> posts = postService.getPostById(id);
+        if (posts.isPresent()){
+            return new ApiResponse(Utils.POST_FOUND, HttpStatus.OK.value(), posts);
+        } else {
+            return new ApiResponse(Utils.POST_NOT_FOUND, HttpStatus.NOT_FOUND.value(), null);
+        }
+    }
+
 }
 

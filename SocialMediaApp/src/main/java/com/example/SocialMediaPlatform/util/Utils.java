@@ -24,5 +24,8 @@ public class Utils {
     public static final String POST_API_PREFIX = "/post";
     public static final String POST_ADDED= "Post added";
     public static final String POST_NOT_ADDED= "Post failed to add";
+    public static final String POST_FOUND = "Post found Successfully";
+    public static final String POST_NOT_FOUND = "Post not found";
+    public static final String POST_BY_ID = "/{id}";
 
 }

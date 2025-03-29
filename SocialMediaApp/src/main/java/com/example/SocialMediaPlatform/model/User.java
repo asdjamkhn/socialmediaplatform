@@ -31,7 +31,6 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String password;
 
-
     private String bio;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

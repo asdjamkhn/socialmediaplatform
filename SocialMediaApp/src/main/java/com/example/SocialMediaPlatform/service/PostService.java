@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -33,5 +35,13 @@ public class PostService {
     public Page<Post> findAll(Pageable pageable) {
 
         return postRepository.findAll(pageable);
+    }
+
+    public Optional<Post> getPostById(int id) {
+        try {
+            return postRepository.findById(id);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -6,10 +6,12 @@ import com.example.SocialMediaPlatform.model.User;
 import com.example.SocialMediaPlatform.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -18,16 +20,19 @@ public class UserService {
 
 
     public User addUser(RegisterDto registerDto) {
+        try {
+            User newUser = new User();
+            newUser.setUsername(registerDto.getUsername());
+            newUser.setEmail(registerDto.getEmail());
+            newUser.setPassword(registerDto.getPassword());
+            newUser.setBio(registerDto.getBio());
 
-        User newUser = new User();
-        newUser.setUsername(registerDto.getUsername());
-        newUser.setEmail(registerDto.getEmail());
-        newUser.setPassword(registerDto.getPassword());
-        newUser.setBio(registerDto.getBio());
-
-        return userRepository.save(newUser);
+            return userRepository.save(newUser);
+        } catch (Exception e){
+            log.error("Error: {}", e.getMessage());
+            return null;
+        }
     }
-
 
     public User loginUser(LoginDto loginDto) {
 
