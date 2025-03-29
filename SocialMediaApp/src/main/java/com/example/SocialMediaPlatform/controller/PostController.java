@@ -38,7 +38,7 @@ public class PostController {
     public ApiResponse getAllPost(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "postId") String sortBy,
             @RequestParam(defaultValue = "true") boolean ascending
     ) {
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
