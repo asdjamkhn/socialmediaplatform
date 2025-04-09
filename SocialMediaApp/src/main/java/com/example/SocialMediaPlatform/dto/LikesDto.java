@@ -13,8 +13,7 @@ import java.time.LocalDate;
 @Getter
 public class LikesDto {
 
-    private LocalDate date = LocalDate.now();
-    private Post post;
-    private User user;
+    private int postId;
+    private int userId;
 
 }

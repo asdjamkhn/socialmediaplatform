@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 public class FollowDto {
 
-    private User follower;
-    private User following;
+    private int followerId;
+    private int followingId;
 
 }

@@ -1,18 +1,26 @@
 package com.example.SocialMediaPlatform.controller;
 
 import com.example.SocialMediaPlatform.apiresponse.ApiResponse;
+import com.example.SocialMediaPlatform.dto.FollowDto;
 import com.example.SocialMediaPlatform.dto.LoginDto;
 import com.example.SocialMediaPlatform.dto.RegisterDto;
+import com.example.SocialMediaPlatform.model.Follow;
+import com.example.SocialMediaPlatform.model.Post;
 import com.example.SocialMediaPlatform.model.User;
 import com.example.SocialMediaPlatform.service.UserService;
 import com.example.SocialMediaPlatform.util.Utils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -75,5 +83,59 @@ public class UserController {
         }
     }
 
+    @PostMapping(Utils.FOLLOW_USER)
+    public ApiResponse followUser(@PathVariable int id, @RequestBody FollowDto followDto){
 
+        boolean result = userService.followUser(id, followDto);
+
+        if (result) {
+            return new ApiResponse(Utils.USER_FOLLOWED, HttpStatus.OK.value(), result);
+        } else {
+            return new ApiResponse(Utils.USER_NOT_FOLLOWED, HttpStatus.NOT_FOUND.value(), result);
+        }
+    }
+
+    @GetMapping(Utils.USERS_FOLLOWERS)
+    public ApiResponse getUsersFollowers(@PathVariable int id){
+
+        List<Follow> result = userService.getUsersFollowers(id);
+
+        if (result != null) {
+            return new ApiResponse(Utils.USER_FOLLOWERS, HttpStatus.OK.value(), result);
+        } else {
+            return new ApiResponse(Utils.USERS_FOLLOWERS_NOT_FOUND, HttpStatus.NOT_FOUND.value(), result);
+        }
+    }
+
+    @GetMapping(Utils.USERS_FOLLOWING)
+    public ApiResponse getUsersFollowing(@PathVariable int id){
+
+        List<Follow> result = userService.getUsersFollowing(id);
+
+        if (result != null) {
+            return new ApiResponse(Utils.USER_FOLLOWING, HttpStatus.OK.value(), result);
+        } else {
+            return new ApiResponse(Utils.USERS_FOLLOWING_NOT_FOUND, HttpStatus.NOT_FOUND.value(), result);
+        }
+    }
+
+    @PostMapping(Utils.SEARCH_USERS)
+    public ApiResponse searchUsers(
+            @RequestParam String email,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "email") String sortBy,
+            @RequestParam(defaultValue = "true") boolean ascending){
+
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<User> page1  = userService.searchUsers(email, pageable);
+
+        if (page1 != null) {
+            return new ApiResponse(Utils.USERS_SEARCHED, HttpStatus.FOUND.value(), page1);
+        } else {
+            return new ApiResponse(Utils.USERS_NOT_FOUND, HttpStatus.NOT_FOUND.value(), page1);
+        }
+    }
 }
