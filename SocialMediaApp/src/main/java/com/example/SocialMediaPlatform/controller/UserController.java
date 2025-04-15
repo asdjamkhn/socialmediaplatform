@@ -71,6 +71,16 @@ public class UserController {
         }
     }
 
+    @PostMapping("/users/login")
+    public ApiResponse login(@RequestBody LoginDto loginDto) {
+        try {
+            String jwtToken = userService.login(loginDto.getEmail(), loginDto.getPassword());
+            return new ApiResponse(Utils.LOGIN_SUCCESSFULL, HttpStatus.FOUND.value(), jwtToken);
+        } catch (Exception e) {
+            return new ApiResponse(Utils.LOGIN_FAILED, HttpStatus.NOT_FOUND.value(), null);
+        }
+    }
+
     @GetMapping("/{id}")
     public ApiResponse userById(@PathVariable int id) {
 
@@ -124,7 +134,7 @@ public class UserController {
             @RequestParam String email,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "email") String sortBy,
+            @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "true") boolean ascending){
 
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();

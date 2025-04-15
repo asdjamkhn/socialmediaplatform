@@ -9,11 +9,16 @@ import com.example.SocialMediaPlatform.model.Post;
 import com.example.SocialMediaPlatform.model.User;
 import com.example.SocialMediaPlatform.repository.FollowRepository;
 import com.example.SocialMediaPlatform.repository.UserRepository;
+import com.example.SocialMediaPlatform.util.JwtUtil;
+import com.example.SocialMediaPlatform.util.Utils;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -27,6 +32,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
 
     public User addUser(RegisterDto registerDto) {
@@ -105,6 +112,19 @@ public class UserService {
         Page<User> users = userRepository.searchUsers(email, pageable);
 
         return users;
+    }
+
+    public String login(String email, String password) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
+
+        // Validate password
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid username or password");
+        }
+        // Generate JWT with useremail and userId
+        return jwtUtil.generateToken(user.getEmail(), user.getUserId());
     }
 }
 
