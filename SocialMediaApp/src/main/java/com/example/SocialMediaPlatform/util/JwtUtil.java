@@ -20,7 +20,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("id",id)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
     }
