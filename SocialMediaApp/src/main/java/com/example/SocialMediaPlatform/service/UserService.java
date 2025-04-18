@@ -41,7 +41,7 @@ public class UserService {
             User newUser = new User();
             newUser.setUsername(registerDto.getUsername());
             newUser.setEmail(registerDto.getEmail());
-            newUser.setPassword(registerDto.getPassword());
+            newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
             newUser.setBio(registerDto.getBio());
 
             return userRepository.save(newUser);
@@ -51,15 +51,18 @@ public class UserService {
         }
     }
 
-    public User loginUser(LoginDto loginDto) {
+    public String loginUser(LoginDto loginDto) {
 
         User user = userRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException());
 
-        if (!loginDto.getPassword().equals(user.getPassword())) {
-            throw new IllegalArgumentException();
+        // Validate password
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
         }
-        return user;
+        // Generate JWT with username only
+        return jwtUtil.generateToken(user.getEmail(), user.getUserId());
+
     }
 
     public Optional<User> userById(int id) {

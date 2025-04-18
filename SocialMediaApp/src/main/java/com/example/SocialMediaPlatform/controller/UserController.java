@@ -55,13 +55,13 @@ public class UserController {
             String errorMessage = bindingResult.getFieldError().getDefaultMessage();
             return new ApiResponse(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR.value(), null);
         }
-        User result = null;
+        String result = null;
         try {
             result = userService.loginUser(loginDto);
         }catch (EntityNotFoundException entityNotFoundException){
             return new ApiResponse(Utils.INCORRECT_EMAIL, HttpStatus.NOT_FOUND.value(), result);
         }
-        catch (IllegalArgumentException illegalArgumentException){
+        catch (RuntimeException runtimeException){
             return new ApiResponse(Utils.INCORRECT_PASSWORD, HttpStatus.NOT_FOUND.value(),result);
         }
         if (result != null) {
