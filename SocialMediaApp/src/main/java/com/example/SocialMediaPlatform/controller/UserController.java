@@ -87,9 +87,9 @@ public class UserController {
         Optional<User> result = userService.userById(id);
 
         if (result.isPresent()) {
-            return new ApiResponse(Utils.USER_ADDED, HttpStatus.FOUND.value(), result);
+            return new ApiResponse(Utils.USER_FOUND, HttpStatus.FOUND.value(), result);
         } else {
-            return new ApiResponse(Utils.USER_NOT_ADDED, HttpStatus.NOT_FOUND.value(), null);
+            return new ApiResponse(Utils.USERS_NOT_FOUND, HttpStatus.NOT_FOUND.value(), null);
         }
     }
 
