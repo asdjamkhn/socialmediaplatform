@@ -1,6 +1,7 @@
 package com.example.SocialMediaPlatform.service;
 
 import com.example.SocialMediaPlatform.apiresponse.ApiResponse;
+import com.example.SocialMediaPlatform.configuration.RabbitMQConfig;
 import com.example.SocialMediaPlatform.dto.FollowDto;
 import com.example.SocialMediaPlatform.dto.LoginDto;
 import com.example.SocialMediaPlatform.dto.RegisterDto;
@@ -16,6 +17,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,7 +37,13 @@ public class UserService {
     private final FollowRepository followRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RabbitTemplate rabbitTemplate;
 
+    @Value("${rabbitmq.exchange.name}")
+    private String exchange;
+
+    @Value("${rabbitmq.routing.key.name}")
+    private String routingKey;
 
     public User addUser(RegisterDto registerDto) {
         try {
@@ -43,6 +52,8 @@ public class UserService {
             newUser.setEmail(registerDto.getEmail());
             newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
             newUser.setBio(registerDto.getBio());
+
+            rabbitTemplate.convertAndSend(exchange, routingKey, newUser.toString());
 
             return userRepository.save(newUser);
         } catch (Exception e) {
