@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -133,4 +134,32 @@ public class PostService {
 
         return postList;
     }
+
+    public List<Post> getPostByUserId(int id) {
+
+        try {
+            return postRepository.getPostByUserId(id);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Post> getPostByGivenDate() {
+
+        try {
+            return postRepository.getPostByGivenDate();
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Map<String,Object>> getUniquePost() {
+
+        try {
+            return postRepository.getUniquePost();
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

@@ -38,6 +38,7 @@ public class Utils {
     public static final String POST_FOUND = "Post found Successfully";
     public static final String POST_NOT_FOUND = "Post not found";
     public static final String POST_BY_ID = "/{id}";
+    public static final String POST_BY_USER_ID = "/user/{id}";
     public static final String POST_UPDATED = "Post updated successfully";
     public static final String POST_FAILED_TO_UPDATE = "Post failed to update";
     public static final String POST_DELETED = "Post deleted successfully";
@@ -58,6 +59,10 @@ public class Utils {
     public static final String LIKES_ADDED= "Liked successfully";
     public static final String LIKES_NOT_ADDED= " Failed to like a post";
     public static final String ALL_USER_FOLLOWERS = "/follow/usersfollowers";
+
+    public static final String STUDENT_BY_ID= "/{id}";
+    public static final String STUDENT_DELETED = "Student deleted successfully";
+    public static final String STUDENT_FAILED_TO_DELETE = "Student failed to delete";
 
 
 

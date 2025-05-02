@@ -20,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
@@ -98,7 +99,7 @@ public class PostController {
     }
 
     @PostMapping(Utils.ADD_COMMENT)
-    public ApiResponse addCommentToPost(@PathVariable int id, @Valid  @RequestBody CommentDto commentDto, BindingResult bindingResult) {
+    public ApiResponse addCommentToPost(@PathVariable int id, @Valid @RequestBody CommentDto commentDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getFieldError().getDefaultMessage();
@@ -142,6 +143,36 @@ public class PostController {
             return new ApiResponse(Utils.POSTS_SEARCHED, HttpStatus.FOUND.value(), page1);
         } else {
             return new ApiResponse(Utils.POSTS_NOT_FOUND, HttpStatus.NOT_FOUND.value(), page1);
+        }
+    }
+
+    @GetMapping(Utils.POST_BY_USER_ID)
+    public ApiResponse getPostByUserId(@PathVariable int id) {
+        List<Post> post = postService.getPostByUserId(id);
+        if (!post.isEmpty()) {
+            return new ApiResponse(Utils.POST_FOUND, HttpStatus.OK.value(), post);
+        } else {
+            return new ApiResponse(Utils.POST_NOT_FOUND, HttpStatus.NOT_FOUND.value(), null);
+        }
+    }
+
+    @GetMapping("/byDate")
+    public ApiResponse getPostByGivenDate() {
+        List<Post> post = postService.getPostByGivenDate();
+        if (!post.isEmpty()) {
+            return new ApiResponse(Utils.POST_FOUND, HttpStatus.OK.value(), post);
+        } else {
+            return new ApiResponse(Utils.POST_NOT_FOUND, HttpStatus.NOT_FOUND.value(), null);
+        }
+    }
+
+    @GetMapping("/content")
+    public ApiResponse getUniquePost() {
+        List<Map<String,Object>>post = postService.getUniquePost();
+        if (!post.isEmpty()) {
+            return new ApiResponse(Utils.POST_FOUND, HttpStatus.OK.value(), post);
+        } else {
+            return new ApiResponse(Utils.POST_NOT_FOUND, HttpStatus.NOT_FOUND.value(), null);
         }
     }
 }
