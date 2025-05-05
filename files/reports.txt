@@ -1,0 +1,1 @@
+User(userId=6, username=asad1, email=asad1@gmail.com, password=$2a$10$TTtEqvDfWMOp.meuvRd3DO2HBBFqJf7Cid7TbyB38YXmIE9EETOXq, bio=Java Developer, postList=[], commentList=[], likesList=[], follower=[], following=[])

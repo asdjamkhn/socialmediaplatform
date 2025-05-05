@@ -25,8 +25,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.io.FileWriter;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 @Slf4j
 @Service
@@ -56,98 +58,98 @@ public class UserService {
             newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
             newUser.setBio(registerDto.getBio());
 
-
-
             User savedUser = userRepository.save(newUser);
 
             rabbitTemplate.convertAndSend(exchange, routingKey, savedUser.toString());
 
+
             return savedUser;
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             log.error("Error: {}", e.getMessage());
             return null;
         }
     }
 
-    public String loginUser(LoginDto loginDto) {
+        public String loginUser (LoginDto loginDto){
 
-        User user = userRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException());
+            User user = userRepository.findByEmail(loginDto.getEmail())
+                    .orElseThrow(() -> new EntityNotFoundException());
 
-        // Validate password
-        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
-        }
-        // Generate JWT with username only
-        return jwtUtil.generateToken(user.getEmail(), user.getUserId());
+            // Validate password
+            if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+                throw new RuntimeException("Invalid password");
+            }
+            // Generate JWT with username only
+            return jwtUtil.generateToken(user.getEmail(), user.getUserId());
 
-    }
-
-    public Optional<User> userById(int id) {
-
-        return userRepository.findById(id);
-    }
-
-    public boolean followUser(int followingId, FollowDto followDto) {
-
-        Optional<User> followingUser = userRepository.findById(followingId);
-        Optional<User> followerUser = userRepository.findById(followDto.getFollowerId());
-
-        if (!followerUser.isPresent() && !followingUser.isPresent()) {
-            return false;
         }
 
-        Follow follow = new Follow();
-        follow.setFollower(followerUser.get());
-        follow.setFollowing(followingUser.get());
+        public Optional<User> userById ( int id){
 
-        followRepository.save(follow);
+            return userRepository.findById(id);
+        }
 
-        return true;
-    }
+        public boolean followUser ( int followingId, FollowDto followDto){
 
-    public List<Follow> getUsersFollowers(int id) {
+            Optional<User> followingUser = userRepository.findById(followingId);
+            Optional<User> followerUser = userRepository.findById(followDto.getFollowerId());
 
-        List<Follow> followList = followRepository.getUsersFollowers(id);
+            if (!followerUser.isPresent() && !followingUser.isPresent()) {
+                return false;
+            }
 
-        if (followList.isEmpty()) {
-            return null;
-        } else {
-            return followList;
+            Follow follow = new Follow();
+            follow.setFollower(followerUser.get());
+            follow.setFollowing(followingUser.get());
+
+            followRepository.save(follow);
+
+            return true;
+        }
+
+        public List<Follow> getUsersFollowers ( int id){
+
+            List<Follow> followList = followRepository.getUsersFollowers(id);
+
+            if (followList.isEmpty()) {
+                return null;
+            } else {
+                return followList;
+            }
+        }
+
+        public List<Follow> getUsersFollowing ( int id){
+
+            List<Follow> followList = followRepository.getUsersFollowing(id);
+
+            if (followList.isEmpty()) {
+                return null;
+            } else {
+                return followList;
+            }
+        }
+
+        public Page<User> searchUsers (String email, Pageable pageable){
+
+            Page<User> users = userRepository.searchUsers(email, pageable);
+
+            return users;
+        }
+
+        public String login (String email, String password){
+
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Invalid username or password"));
+
+            // Validate password
+            if (!passwordEncoder.matches(password, user.getPassword())) {
+                throw new RuntimeException("Invalid username or password");
+            }
+            // Generate JWT with useremail and userId
+            return jwtUtil.generateToken(user.getEmail(), user.getUserId());
         }
     }
-
-    public List<Follow> getUsersFollowing(int id) {
-
-        List<Follow> followList = followRepository.getUsersFollowing(id);
-
-        if (followList.isEmpty()) {
-            return null;
-        } else {
-            return followList;
-        }
-    }
-
-    public Page<User> searchUsers(String email, Pageable pageable) {
-
-        Page<User> users = userRepository.searchUsers(email, pageable);
-
-        return users;
-    }
-
-    public String login(String email, String password) {
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
-
-        // Validate password
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
-        }
-        // Generate JWT with useremail and userId
-        return jwtUtil.generateToken(user.getEmail(), user.getUserId());
-    }
-}
 
 
 
