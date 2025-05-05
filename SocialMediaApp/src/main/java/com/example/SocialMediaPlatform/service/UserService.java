@@ -45,6 +45,9 @@ public class UserService {
     @Value("${rabbitmq.routing.key.name}")
     private String routingKey;
 
+    @Value("${rabbitmq.queue.name}")
+    private String rmqQueue;
+
     public User addUser(RegisterDto registerDto) {
         try {
             User newUser = new User();
@@ -53,9 +56,13 @@ public class UserService {
             newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
             newUser.setBio(registerDto.getBio());
 
-            rabbitTemplate.convertAndSend(exchange, routingKey, newUser.toString());
 
-            return userRepository.save(newUser);
+
+            User savedUser = userRepository.save(newUser);
+
+            rabbitTemplate.convertAndSend(exchange, routingKey, savedUser.toString());
+
+            return savedUser;
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
             return null;
